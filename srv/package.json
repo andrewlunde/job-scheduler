@@ -1,12 +1,33 @@
 {
+  "default_deps": {
+    "@sap/jobs-client": "1.5.1",
+    "other": "end of deps"
+  },
+  "origin_deps": {
+    "@sap/jobs-client": "git://github.wdf.sap.corp/I830671/node-jobs-client",
+    "other": "end of deps"
+  },
+  "extern_deps": {
+    "@sap/jobs-client": "git://github.com/andrewlunde/node-jobs-client",
+    "other": "end of deps"
+  },
+  "upstream_deps": {
+    "@sap/jobs-client": "git://github.wdf.sap.corp/jobscheduler/node-jobs-client",
+    "other": "end of deps"
+  },
   "dependencies": {
     "@sap/xsenv": "latest",
     "@sap/xssec": "latest",
     "@sap/hdbext": "latest",
+    "@sap/jobs-client": "1.5.1",
     "express": "~4.16.0",
     "passport": "^0.4.0",
     "stringify-object": "latest",
     "nodemon": "latest",
+    "async": "latest",
+    "axios": "latest",
+    "qs": "latest",
+    "crypto": "latest",
     "body-parser": "latest"
   },
   "description": "my description",
@@ -15,6 +36,8 @@
   "main": "server.js",
   "name": "nodejs",
   "scripts": {
+    "normalstart": "nodemon server.js",
+    "debugstart": "node --inspect server.js",
     "start": "nodemon server.js"
   },
   "version": "1.0.0"

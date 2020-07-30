@@ -6,7 +6,13 @@
   },
   "routes": [
     {
-      "source": "(job-sched_srv_route/)(.*)",
+      "source": "(util/)(.*)",
+      "destination": "job-sched_srv_be",
+      "csrfProtection": false,
+      "authenticationType": "none"
+    },
+     {
+      "source": "(sched/)(.*)",
       "destination": "job-sched_srv_be",
       "csrfProtection": true,
       "authenticationType": "xsuaa"
