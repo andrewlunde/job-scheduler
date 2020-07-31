@@ -77,7 +77,7 @@ Tools used throughout the development of this project are evolving and my change
 
 ## Learn more...
 
-Learn more at https://cap.cloud.sap/docs/get-started/
+Learn more at [https://github.wdf.sap.corp/pages/jobscheduler/docs/](https://github.wdf.sap.corp/pages/jobscheduler/docs/) (internal)
 
 ## Project Structure
 
@@ -93,7 +93,7 @@ File / Folder | Purpose
 ## License
  Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE file](LICENSE).
 
-# Build Command:
+### Build Command:
 ```
 mkdir -p mta_archives
 --then--
@@ -102,7 +102,7 @@ mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar
 mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar
 ```
 
-# Deploy Command:
+### Deploy Command:
 ```
 xs deploy mta_archives/job-sched-xsa.mtar -f -e deploy_xsa.mtaext
 --or--for--dedicated
@@ -111,17 +111,16 @@ cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_ded.mtaext
 cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_shr.mtaext
 ```
 
-# Subsequent Build+Deploy Commands:
+### Subsequent Build+Deploy Commands:
 ```
 mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar ; xs deploy mta_archives/job-sched-xsa.mtar -f
 --or--
 mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar ; cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_ded.mtaext
 ```
 
-# Undeploy Command:
+### Undeploy Command:
 ```
 xs undeploy job-sched -f --delete-services
 --or--
 cf undeploy job-sched -f --delete-services
 ```
-
