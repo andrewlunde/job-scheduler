@@ -2,14 +2,11 @@
 "use strict";
 
 var xsenv = require("@sap/xsenv");
-var xssec = require("@sap/xssec");
-var hdbext = require("@sap/hdbext");
+// var xssec = require("@sap/xssec");
 var express = require("express");
-var passport = require("passport");
-var stringifyObj = require("stringify-object");
 var bodyParser = require("body-parser");
 
-var async = require("async");
+// var async = require("async");
 
 const axios = require('axios');
 

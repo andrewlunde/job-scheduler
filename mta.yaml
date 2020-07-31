@@ -22,12 +22,15 @@ modules:
 
 ### New Modules Here ###
 
-# cf push job-sched-wrk -p wrk -n job-sched-wrk -d cfapps.us10.hana.ondemand.com -k 512M -m 256M
+# cf push job-sched-wrk -p wrk -n conciletime-dev-job-sched-wrk -d cfapps.us10.hana.ondemand.com -k 512M -m 256M
  - name: job-sched-wrk
    type: nodejs
    path: wrk
    build-parameters:
-      ignore: ["node_modules/"]
+      ignore: ["default-env.json","package-lock.json", "node_modules/"]
+      # Suppress the calling of npm install by listing no commands
+      builder: custom
+      commands: []
    parameters:
       memory: 256M
       disk-quota: 512M
@@ -43,12 +46,12 @@ modules:
     - name: job-sched-uaa
     - name: job-sched-sch
 
-# cf push job-sched-srv -p srv -n subdomain-space-job-sched-srv -d cfapps.us10.hana.ondemand.com -k 512M -m 256M
+# cf push job-sched-srv -p srv -n conciletime-dev-job-sched-srv -d cfapps.us10.hana.ondemand.com -k 512M -m 256M
  - name: job-sched-srv
    type: nodejs
    path: srv
    build-parameters:
-      ignore: ["package-lock.json", "node_modules/"]
+      ignore: ["default-env.json","package-lock.json", "node_modules/"]
       # Suppress the calling of npm install by listing no commands
       builder: custom
       commands: []
@@ -71,12 +74,12 @@ modules:
     - name: job-sched-uaa
     - name: job-sched-sch
 
-# cf push job-sched-app -p app -n subdomain-space-job-sched-app -d cfapps.us10.hana.ondemand.com -k 256M -m 256M
+# cf push job-sched-app -p app -n conciletime-dev-job-sched-app -d cfapps.us10.hana.ondemand.com -k 256M -m 256M
  - name: job-sched-app
    type: html5
    path: app
    build-parameters:
-      ignore: ["package-lock.json", "node_modules/"]
+      ignore: ["default-env.json","package-lock.json", "node_modules/"]
       # Suppress the calling of npm install by listing no commands
       builder: custom
       commands: []
