@@ -119,6 +119,8 @@ app.get("/sched/get_all_jobs", function (req, res) {
 	};
 
 	var jreq = {};
+	var xtrathings = [];
+
 	scheduler.fetchAllJobs(jreq, (err, result) => {
 	
 		if (err) {
@@ -127,8 +129,17 @@ app.get("/sched/get_all_jobs", function (req, res) {
 			return res.json(responseJSON);
 		}
 		else {
-			console.log('OK retrieving jobs: %s', result);
+			//console.log('OK retrieving jobs: %s', result);
 			responseJSON = result;
+
+			result.results.forEach((job, idx) => {
+				//console.log("  jobId: " + job.jobId);
+				//console.log("jobName: " + job.name);
+				xtrathings.push({ schedsURL: 'https://' + req.hostname + '/sched/fetch_job_schedules?jobId=' + job.jobId});
+				xtrathings.push({ deleteURL: 'https://' + req.hostname + '/sched/delete_job?jobId=' + job.jobId});
+			});
+			//console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=false&message=NOT%20OK%20finished');
+			responseJSON['xtra'] = xtrathings;
 			return res.json(responseJSON);
 		}
 		return null;
@@ -380,6 +391,7 @@ app.get("/sched/fetch_job_schedules", function (req, res) {
 	};
 
 	var sfJobScheds = { jobId: req.query.jobId };
+	var xtrathings = [];
 
 	scheduler.fetchJobSchedules(sfJobScheds, (error, result) => {
 	
@@ -391,6 +403,13 @@ app.get("/sched/fetch_job_schedules", function (req, res) {
 		else {
 			console.log('OK fetching job schedules: %s', result);
 			responseJSON = result;
+			result.results.forEach((sched, idx) => {
+				//console.log("  jobId: " + job.jobId);
+				//console.log("jobName: " + job.name);
+				xtrathings.push({ schedsURL: 'https://' + req.hostname + '/sched/get_run_logs?jobId=' + req.query.jobId + '&scheduleId=' + sched.scheduleId});
+			});
+			responseJSON['xtra'] = xtrathings;
+
 			return res.json(responseJSON);
 		}
 		return null;

@@ -15,6 +15,12 @@ var app = express();
 var server = require("http").createServer();
 var port = process.env.PORT || 3000;
 
+var global_scheduler_host = "";
+var global_run_at = "";
+var global_job_id = "";
+var global_schedule_id = "";
+var global_run_id = "";
+
 app.get("/", function (req, res) {
 
 	var responseStr = "";
@@ -57,13 +63,109 @@ app.get("/wrk/date", function (req, res) {
 	res.status(200).send(responseStr);
 });
 
+function markTheTime () {
+}
+
+var intervalId = null;
+var varCounter = 0;
+var varName = function(){
+     if(varCounter < 10) {
+          varCounter++;
+		  /* your code goes here */
+		  console.log(process.env.INSTANCE_INDEX + " Finishing in " + (10 - varCounter));
+     } else {
+          clearInterval(intervalId);
+     }
+};
+
+function setJobSchedulerStatus () {
+	var outStr = "";
+	
+	var last_scheduler_host = global_scheduler_host;
+	var last_run_at = global_run_at;
+	var last_job_id = global_job_id;
+	var last_schedule_id = global_schedule_id;
+	var last_run_id = global_run_id;
+
+	outStr = "start: ";
+	outStr += new Date().toISOString();
+	console.log(outStr);
+
+	outStr = "last_scheduler_host: " + last_scheduler_host + "";
+	console.log(outStr);
+	outStr = "last_run_at: " + last_run_at + "";
+	console.log(outStr);
+	outStr = "last_job_id: " + last_job_id + "";
+	console.log(outStr);
+	outStr = "last_schedule_id: " + last_schedule_id + "";
+	console.log(outStr);
+	outStr = "last_run_id: " + last_run_id + "";
+	console.log(outStr);
+
+	// Call Job Scheduler to indicate complete
+	var responseJSON = {
+		message: "none",
+	};
+
+	var data = { success: true, message: '"' + "GOOD" + '"' };
+	//var data = { success: false, message: "BAD" };
+
+	var suRunLog = { 
+		jobId: last_job_id, 
+		scheduleId: last_schedule_id,
+		runId: last_run_id,
+		data: data
+	};
+
+	scheduler.updateJobRunLog(suRunLog, (error, result) => {
+	
+		if (error) {
+			console.log('Error update run log: %s', error);
+		}
+		else {
+			console.log('OK update run log: %s', result);
+			outStr = "  end: ";
+			outStr += new Date().toISOString();
+			console.log(outStr);
+
+			global_scheduler_host = "";
+			global_run_at = "";
+			global_job_id = "";
+			global_schedule_id = "";
+			global_run_id = "";
+		
+		}
+		return null;
+	});
+
+}
+
 app.get("/wrk/sleep", function (req, res) {
 
-	var Secs = 10;
+	var Secs = 30;
 	var mSecs = Secs * 1000;
-	var outStr = "sleep: " + Secs + " seconds...";
+	var outStr = "";
 	var responseStr = "";
+	var extras = [];
 
+	// "x-sap-job-id": "110341",
+	// "x-sap-job-run-id": "89bcad0f-782d-4f12-9cfe-dafca51ab5ef",
+	// "x-sap-job-schedule-id": "becbb91d-701a-46ec-8262-39f150ff7eb0",
+	// "x-sap-run-at": "2020-08-03 18:06:17",
+	// "x-sap-scheduler-host": "https://jobscheduler-rest.cfapps.us10.hana.ondemand.com",
+
+	global_scheduler_host = req.headers['x-sap-scheduler-host'];
+	global_run_at = req.headers['x-sap-run-at'];
+	global_job_id = req.headers['x-sap-job-id'];
+	global_schedule_id = req.headers['x-sap-job-schedule-id'];
+	global_run_id = req.headers['x-sap-job-run-id'];
+	
+	outStr = "headers: " + JSON.stringify(req.headers) + "\n";
+	responseStr += outStr;
+	responseStr += "\n";
+	console.log(outStr);
+
+	outStr = "sleep: " + Secs + " seconds...";
 	responseStr += outStr;
 	responseStr += "\n";
 	console.log(outStr);
@@ -73,15 +175,17 @@ app.get("/wrk/sleep", function (req, res) {
 	responseStr += outStr;
 	responseStr += "\n";
 
-	setTimeout(() => {  
-		outStr = "  end: ";
-		outStr += new Date().toISOString();
-		responseStr += outStr;
-		console.log(outStr);
-		responseStr += "\n";
-		res.set('Content-Type', 'text/plain');
-		res.status(200).send(responseStr);
-	}, mSecs);
+	setTimeout(setJobSchedulerStatus, mSecs);
+	intervalId = setInterval(varName, (mSecs / 10));
+
+	outStr = "  end: ";
+	outStr += new Date().toISOString();
+	responseStr += outStr;
+	console.log(outStr);
+
+	responseStr = "OK";
+	res.set('Content-Type', 'text/plain');
+	res.status(202).send(responseStr);  // Notice 202 not 200
 
 });
 
@@ -92,9 +196,10 @@ app.get("/wrk/test_now", function (req, res) {
 		message: "none",
 	};
 	var jobName = "Test";
-	var instanceNumber = "1";
+	var instanceNumber = process.env.INSTANCE_INDEX;
+	console.log("hdrs:" + JSON.stringify(req.headers,null,2));
 	var runDate = new Date();
-	var finishDate = new Date(runDate.getTime() + (1 * 60000));
+	//var finishDate = new Date(runDate.getTime() + (1 * 60000));
 	var hostname = req.hostname;
 	hostname = "conciletime-dev-job-sched-wrk.cfapps.us10.hana.ondemand.com";
 	var myJob = 
@@ -115,35 +220,44 @@ app.get("/wrk/test_now", function (req, res) {
 			//"startTime": null,
 			//"endTime": finishDate.toISOString(),
 			//"endTime": finishDate.toISOString(),
-			"time": finishDate.toISOString(),
+			"time": runDate.toISOString(),
 			"active": true
 		}
 	]
 	};
 
-	var scJob = { job: myJob };
+	if (global_scheduler_host === "") {
+		var scJob = { job: myJob };
 
-	scheduler.createJob(scJob, (error, body) => {
-	
-		if (error) {
-			console.log('Error creating job: %s', error);
-			responseJSON.message = error;
-			return res.json(responseJSON);
-		}
-		else {
-			let resp_jobId = body._id;
-			let resp_scheduleId = body.schedules[0].scheduleId;
-			let resp_runId = "blah";
-			console.log('OK creating job: %s', body);
-			console.log('Schedules: ', JSON.stringify(body.schedules,null,2));
-			console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=false&message=NOT%20OK%20finished');
-			console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=true&message=OK%20finished');
-			console.log('http://' + 'localhost:8002' + '/wrk/get_run_logs?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId);
-			responseJSON = body;
-			return res.json(responseJSON);
-		}
-		return null;
-	});
+		scheduler.createJob(scJob, (error, body) => {
+		
+			if (error) {
+				console.log('Error creating job: %s', error);
+				responseJSON.message = error;
+				return res.json(responseJSON);
+			}
+			else {
+				let resp_jobId = body._id;
+				let resp_scheduleId = body.schedules[0].scheduleId;
+				let resp_runId = "blah";
+				console.log('OK creating job: %s', body);
+				console.log('Schedules: ', JSON.stringify(body.schedules,null,2));
+				console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=false&message=NOT%20OK%20finished');
+				console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=true&message=OK%20finished');
+				console.log('http://' + 'localhost:8002' + '/wrk/get_run_logs?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId);
+				responseJSON = body;
+				return res.json(responseJSON);
+			}
+			return null;
+		});
+		
+	}
+	else {
+		var error = { message: "Instance " + instanceNumber + " is busy.  Might want to create more."};
+		console.log('Error creating job: %s', error);
+		responseJSON.message = error;
+		return res.json(responseJSON);
+	}
 
 });
 
