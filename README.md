@@ -71,7 +71,7 @@ cf set-env job-sched-srv SECRET_TOKEN '234ed9950replacewithyoursecrettoken08af32
 cf restage job-sched-srv
 ```
 
-## Instuctions
+## Instructions
 
 Replace occurances of "us10.hana.demand,com" with the landscape region variant for your account. 
 
