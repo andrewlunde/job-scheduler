@@ -70,13 +70,14 @@ cf set-env job-sched-srv WEBHOOK_URL 'https://cicd-service.cfapps.us10.hana.onde
 cf set-env job-sched-srv SECRET_TOKEN '234ed9950replacewithyoursecrettoken08af322deb73efddf'
 cf restage job-sched-srv
 ```
- 
-## Instructions
+
+## Instuctions
+
+See the [COMMANDS](COMMANDS.md) file for comands for building and deploying the project.
 
 ## Limitations
 
- - Not all features and techniques may be demonstorable with Cloud Foundry trial accounts.
- - Long-running task support is currently not demonstrated in this example.
+ - Not all features and techniques may be demonstrable with Cloud Foundry trial accounts.
 
 ## Known Issues
 
@@ -103,6 +104,7 @@ Learn more at [https://github.wdf.sap.corp/pages/jobscheduler/docs/](https://git
 File / Folder | Purpose
 ---------|----------
 `README.md` | this getting started guide
+`COMMANDS.md` | commands for building/deploying 
 `app/` | content for UI frontends go here
 `srv/` | your service module code goes here
 `mta.yaml` | project structure and relationships
@@ -111,35 +113,3 @@ File / Folder | Purpose
 
 ## License
  Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE file](LICENSE).
-
-### Build Command:
-```
-mkdir -p mta_archives
---then--
-mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar
---or--
-mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar
-```
-
-### Deploy Command:
-```
-xs deploy mta_archives/job-sched-xsa.mtar -f -e deploy_xsa.mtaext
---or--for--dedicated
-cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_ded.mtaext
---or--for--shared
-cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_shr.mtaext
-```
-
-### Subsequent Build+Deploy Commands:
-```
-mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar ; xs deploy mta_archives/job-sched-xsa.mtar -f
---or--
-mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar ; cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_ded.mtaext
-```
-
-### Undeploy Command:
-```
-xs undeploy job-sched -f --delete-services
---or--
-cf undeploy job-sched -f --delete-services
-```
