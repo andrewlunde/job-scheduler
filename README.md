@@ -46,7 +46,7 @@ Documentation link for the [Job Scheduler Services in XS Advanced](https://help.
 
  - Clone this repo [https://github.com/SAP-samples/mta-job-scheduler.git](https://github.com/SAP-samples/mta-job-scheduler.git) into your local system or IDE of choice.
 
- - Either modify the mta.yaml to specify your specific CI/CD configuration(optional).
+ - Modify the mta.yaml to specify your specific CI/CD configuration(optional).
 
  ```
 ...
@@ -63,7 +63,7 @@ modules:
       NODE_DEBUG: 'scheduler'
 ...
 ```
- - OR after depoyment, update the environment for the job-sched-srv application.
+ - OR after deployment, update the environment for the job-sched-srv module.
  ```
 cf set-env job-sched-srv CICD_UI 'https://subdomain.cicd.cfapps.us10.hana.ondemand.com/ui/index.html'
 cf set-env job-sched-srv WEBHOOK_URL 'https://cicd-service.cfapps.us10.hana.ondemand.com/v1/github_events/account/6e3ca693-use-your-account-9c30-254a18b59a55'
@@ -71,7 +71,7 @@ cf set-env job-sched-srv SECRET_TOKEN '234ed9950replacewithyoursecrettoken08af32
 cf restage job-sched-srv
 ```
 
-## Instuctions
+## Instructions
 
 Replace occurances of "us10.hana.demand,com" with the landscape region variant for your account. 
 
@@ -108,7 +108,7 @@ Tools used throughout the development of this project are evolving and my change
 
 ## Learn more...
 
-Learn more at [https://github.wdf.sap.corp/pages/jobscheduler/docs/](https://github.wdf.sap.corp/pages/jobscheduler/docs/) (internal)
+Learn more in the help documentation at [Job Scheduler REST APIs](https://help.sap.com/viewer/07b57c2f4b944bcd8470d024723a1631/Cloud/en-US/c513d2de49b140d08da694fa263698f8.html)
 
 ## Project Structure
 
