@@ -1,10 +1,10 @@
 # MTA-Job-Scheduler
 
-Multi-Target Application(MTA) sample using the SAP Cloud Platform Job Scheduler Node.js library to schedule future, repeating(ex: Webhook), and long running jobs.
+Multi-Target Application(MTA) sample using the SAP Cloud Platform Job Scheduler service Node.js library to schedule future, repeating(ex: Webhook), and long running jobs.
 
 ## Description
 
-This repository contains a complete Multi-Target Application(MTA) sample project that is an example of using the SAP Cloud Platform Job Scheduler service to schedule the triggering of URLs for future execution, triggering them on a recurring scheduled basis, or to manage the status and completion of long running jobs.  It also contains a specific example how to trigger a build job by simulating a GitHub Webhook.  It leverages the SAP Node.js [@sap/jobs-client](https://www.npmjs.com/package/@sap/jobs-client) library using callbacks(not promises) for calling the async [REST API](https://help.sap.com/viewer/07b57c2f4b944bcd8470d024723a1631/Cloud/en-US/c513d2de49b140d08da694fa263698f8.html).
+This repository contains a complete Multi-Target Application(MTA) sample project that is an example of using the SAP Cloud Platform Job Scheduler service to schedule the triggering of URLs for future execution, triggering them on a recurring scheduled basis, or to manage the status and completion of long running jobs.  It also contains a specific example how to trigger a build job by simulating a GitHub Webhook.  The job scheduler service leverages the SAP Node.js [@sap/jobs-client](https://www.npmjs.com/package/@sap/jobs-client) library using callbacks(not promises) for calling the async [REST API](https://help.sap.com/viewer/07b57c2f4b944bcd8470d024723a1631/Cloud/en-US/c513d2de49b140d08da694fa263698f8.html).
 
 Much of today's web application programming is designed around a pattern of receiving requests over HTTP, processing the request, and returning a result within a single connection context.  Often this is done based on user activity or during the processing of an application.  However, it is often desired to submit requests at a future time or on a periodic basis.  This is where delegating the request processing to a job schedluler is useful.  This way the job scheduler makes the request on your behalf.  As long as the requests are processed in a reasonably short time frame (<30 seconds) the HTTP request will remain open.  This sample project focuses primarily on this use case.  
 
@@ -73,7 +73,18 @@ cf restage job-sched-srv
 
 ## Instuctions
 
+Replace occurances of "us10.hana.demand,com" with the landscape region variant for your account. 
+
 See the [COMMANDS](COMMANDS.md) file for comands for building and deploying the project.
+
+If you want to enable multitenant support, follow these steps.
+
+- Uncomment the  **- name: job-sched-reg** resource section of the mta.yaml file marked by **MULTITENANT SUPPORT SECTION**
+- Uncomment the requires: **- name: job-sched-reg** item in the mta.yaml file marked by **MULTITENANT SUPPORT SECTION**
+- Uncomment the section of the srv/server.js file marked by **MULTITENANT SUPPORT SECTION**
+- Replace the contents of the app/xs-app.json file with that of app/xs-app_mt.json
+- Undeploy/Build/Redeploy the entire app
+
 
 ## Limitations
 

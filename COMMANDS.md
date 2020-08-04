@@ -15,6 +15,7 @@ mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar ; cf deploy mta_archive
 ```
 ##### Undeploy Command:
 ```
+echo 'Be sure to delete all jobs at /sched/get_all_jobs before undeploying!'
 cf undeploy job-sched -f --delete-services
 ```
 
@@ -35,6 +36,7 @@ mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar ; cf deploy mta_archive
 ```
 ##### Undeploy Command:
 ```
+echo 'Be sure to delete all jobs at /sched/get_all_jobs (and subscriptions) before undeploying!'
 cf undeploy job-sched -f --delete-services
 ```
 
@@ -57,5 +59,6 @@ mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar ; xs deploy mta_archi
 
 ##### Undeploy Command:
 ```
+echo 'Be sure to delete all jobs at /sched/get_all_jobs before undeploying!'
 xs undeploy job-sched -f --delete-services
 ```

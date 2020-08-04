@@ -11,6 +11,7 @@
     "axios": "latest",
     "qs": "latest",
     "crypto": "latest",
+    "cfenv": "latest",
     "body-parser": "latest"
   },
   "description": "my description",
