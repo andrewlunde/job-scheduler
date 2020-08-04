@@ -1,6 +1,6 @@
 # Job-Scheduler
 
-Simple NodeJS Multi-Target Application example of using the jobscheduler service in CF and XSA
+Simple NodeJS Multi-Target Application(MTA) example of using the jobscheduler service in CF and XSA
 
 [Docs for CF](https://help.sap.com/viewer/07b57c2f4b944bcd8470d024723a1631/Cloud/en-US/c513d2de49b140d08da694fa263698f8.html)
 
@@ -14,7 +14,7 @@ While much of today's application programming is designed around a pattern of re
 
 A simple job URL is implemented within the app at /util/date which return the current server's date and time.
 
-A more complex job URL that simulates a the trigginering a GitHub WebHook is found at /util/bump.
+A more complex job URL that simulates a the trigginering a GitHub WebHook is found at /util/trigger.
 
 
 ## Requirements
@@ -92,35 +92,3 @@ File / Folder | Purpose
 
 ## License
  Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE file](LICENSE).
-
-### Build Command:
-```
-mkdir -p mta_archives
---then--
-mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar
---or--
-mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar
-```
-
-### Deploy Command:
-```
-xs deploy mta_archives/job-sched-xsa.mtar -f -e deploy_xsa.mtaext
---or--for--dedicated
-cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_ded.mtaext
---or--for--shared
-cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_shr.mtaext
-```
-
-### Subsequent Build+Deploy Commands:
-```
-mbt build -p=xsa -t=mta_archives --mtar=job-sched-xsa.mtar ; xs deploy mta_archives/job-sched-xsa.mtar -f
---or--
-mbt build -p=cf -t=mta_archives --mtar=job-sched-cf.mtar ; cf deploy mta_archives/job-sched-cf.mtar -f -e deploy_cf_ded.mtaext
-```
-
-### Undeploy Command:
-```
-xs undeploy job-sched -f --delete-services
---or--
-cf undeploy job-sched -f --delete-services
-```

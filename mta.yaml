@@ -34,6 +34,7 @@ modules:
    parameters:
       memory: 256M
       disk-quota: 512M
+      instances: 2
       #host: ${org}-${space}-job-sched-wrk
       #domain: cfapps.us10.hana.ondemand.com
    properties:

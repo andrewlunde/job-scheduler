@@ -162,7 +162,7 @@ app.get("/sched/create_job", function (req, res) {
 	"description": "recurring job named " + req.query.name,
 	"action": "https://" + req.hostname + "/util/date",
 	//"action": "http://" + "localhost" + ":" + "8001" + "/util/date",	// Doesn't work when testing locally against CF
-	//"action": "https://" + "conciletime-dev-bump-app.cfapps.us10.hana.ondemand.com" + "/util/date",
+	//"action": "https://" + "conciletime-dev-job-sched-app.cfapps.us10.hana.ondemand.com" + "/util/date",
 	
 	"active": true,
 	"httpMethod": "GET",
@@ -744,7 +744,7 @@ app.get("/sched/date_in_1_min", function (req, res) {
 	"description": "deferred job created by date_in_1_min",
 	"action": "https://" + req.hostname + "/util/date",
 	//"action": "http://" + "localhost" + ":" + "8001" + "/util/date",	// Doesn't work when testing locally against CF
-	//"action": "https://" + "conciletime-dev-bump-app.cfapps.us10.hana.ondemand.com" + "/util/bump",
+	//"action": "https://" + "conciletime-dev-job-sched-app.cfapps.us10.hana.ondemand.com" + "/util/trigger",
 	
 	"active": true,
 	"httpMethod": "GET",
@@ -788,9 +788,9 @@ app.get("/sched/build_in_1_min", function (req, res) {
 	{
 	"name": req.query.name + "_" + buildDate.getHours() + "_" + buildDate.getMinutes(),
 	"description": "deferred job created by build_in_1_min",
-	"action": "https://" + req.hostname + "/util/bump",
+	"action": "https://" + req.hostname + "/util/trigger",
 	//"action": "http://" + "localhost" + ":" + "8001" + "/util/date",	// Doesn't work when testing locally against CF
-	//"action": "https://" + "conciletime-dev-bump-app.cfapps.us10.hana.ondemand.com" + "/util/bump",
+	//"action": "https://" + "conciletime-dev-job-sched-app.cfapps.us10.hana.ondemand.com" + "/util/trigger",
 	
 	"active": true,
 	"httpMethod": "GET",
@@ -868,10 +868,10 @@ app.get("/util/links", function (req, res) {
 
 	var responseStr = "";
 	responseStr += "<!DOCTYPE HTML><html><head><title>job-sched</title></head><body style=\"font-family: Tahoma, Geneva, sans-serif\"><h1>job-scheduler</h1><br />";
-	responseStr += "<a href=\"/util/cicdui\">CI/CD User Interface.</a><br />";
-	responseStr += "<a href=\"/util/bump\">Trigger a Jenkins Build Job.</a><br />";
-	responseStr += "------<br />";
 	responseStr += "<a href=\"/util/date\">Test trigger target: server data as text.</a><br />";
+	responseStr += "------<br />";
+	responseStr += "<a href=\"/util/cicdui\">SAP Cloud Platform Continuous Integration and Delivery	Cockpit.</a><br />";
+	responseStr += "<a href=\"/util/trigger\">Trigger a Jenkins Build Job.</a><br />";
 	responseStr += "------<br />";
 	responseStr += "<a href=\"/\">Return to home page.</a><br />";
 	responseStr += "</body></html>";
@@ -890,7 +890,7 @@ app.get("/util/cicdui", function (req, res) {
 	responseStr += "Webhook: <a href=\"" + webhook + "\" target=\"webhook\">" + webhook + "</a><br />";
 	responseStr += "Secret: " + secret + "<br />";
 	responseStr += "<br />";
-	responseStr += "<a href=\"/util/bump\" target=\"bump\">Trigger a Jenkins Build Job.</a><br />";
+	responseStr += "<a href=\"/util/trigger\" target=\"trigger\">Trigger a Jenkins Build Job.</a><br />";
 	responseStr += "<br />";
 	responseStr += "<a href=\"/\">Return to home page.</a><br />";
 	responseStr += "</body></html>";
@@ -910,10 +910,10 @@ app.get("/util/json", function (req, res) {
 });
 
 
-app.get("/util/bump", async function (req, res) {
+app.get("/util/trigger", async function (req, res) {
 
 	var responseStr = "";
-	responseStr += "<!DOCTYPE HTML><html><head><title>util/bump</title></head><body style=\"font-family: Tahoma, Geneva, sans-serif\"><h1>util/bump</h1><br />";
+	responseStr += "<!DOCTYPE HTML><html><head><title>util/trigger</title></head><body style=\"font-family: Tahoma, Geneva, sans-serif\"><h1>util/trigger</h1><br />";
 	responseStr += "You need to POST to this URL!<br />";
 	responseStr += "<a href=\"/util/links\">Back to Util Links page.</a><br />";
 	responseStr += "------<br />";
@@ -975,7 +975,7 @@ app.get("/util/bump", async function (req, res) {
 		method: 'get',
 		url: 'https://' + req.hostname + '/util/json',
 		// Hardcoded for localized testing against CF
-        //url: 'https://' + 'conciletime-dev-bump-app.cfapps.us10.hana.ondemand.com' + '/util/json',
+        //url: 'https://' + 'conciletime-dev-job-sched-app.cfapps.us10.hana.ondemand.com' + '/util/json',
 		headers: { 'User-Agent': 'Console app' }
     };
 
@@ -988,7 +988,7 @@ app.get("/util/bump", async function (req, res) {
 
 		config.method = 'post';
 		//Endpoint defined in this app for localized testing
-		//config.url = 'https://conciletime-dev-bump-app.cfapps.us10.hana.ondemand.com/util/bump'
+		//config.url = 'https://conciletime-dev-job-sched-app.cfapps.us10.hana.ondemand.com/util/trigger'
 
 		//Hardcoded CI/CD service endpoint
 		//'https://cicd-service.cfapps.us10.hana.ondemand.com/v1/github_events/account/6e3ca693-c112-4862-9c30-254a18b59a55'
@@ -1073,7 +1073,7 @@ app.get("/util/bump", async function (req, res) {
 });
 
 // subscribe/onboard a subscriber tenant
-app.post("/util/bump", function(req, res) {
+app.post("/util/trigger", function(req, res) {
 	let retVal = "You POSTED!";
 	
 	const secret = process.env.SECRET_TOKEN;

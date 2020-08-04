@@ -47,8 +47,9 @@ app.get("/wrk/links", function (req, res) {
 
 	var responseStr = "";
 	responseStr += "<!DOCTYPE HTML><html><head><title>job-sched</title></head><body style=\"font-family: Tahoma, Geneva, sans-serif\"><h1>job-sched-worker</h1><br />";
-	responseStr += "<a href=\"/wrk/links\">Back to Links page.</a><br />";
+	responseStr += "<a href=\"/wrk/date\">Date Test.</a><br />";
 	responseStr += "<a href=\"/wrk/test_now\" target=\"test\">test_now</a> Test Now! Monitor with: <strong>cf logs job-sched-wrk</strong><br />";
+	responseStr += "<a href=\"/wrk/sleep\" target=\"test\">sleep</a> URL Endpoint that sleeps 30 seconds. Monitor with: <strong>cf logs job-sched-wrk</strong><br />";
 	responseStr += "------<br />";
 	responseStr += "<a href=\"/\">Return to home page.</a><br />";
 	responseStr += "</body></html>";
@@ -63,8 +64,6 @@ app.get("/wrk/date", function (req, res) {
 	res.status(200).send(responseStr);
 });
 
-function markTheTime () {
-}
 
 var intervalId = null;
 var varCounter = 0;
@@ -154,38 +153,49 @@ app.get("/wrk/sleep", function (req, res) {
 	// "x-sap-run-at": "2020-08-03 18:06:17",
 	// "x-sap-scheduler-host": "https://jobscheduler-rest.cfapps.us10.hana.ondemand.com",
 
-	global_scheduler_host = req.headers['x-sap-scheduler-host'];
-	global_run_at = req.headers['x-sap-run-at'];
-	global_job_id = req.headers['x-sap-job-id'];
-	global_schedule_id = req.headers['x-sap-job-schedule-id'];
-	global_run_id = req.headers['x-sap-job-run-id'];
-	
-	outStr = "headers: " + JSON.stringify(req.headers) + "\n";
-	responseStr += outStr;
-	responseStr += "\n";
-	console.log(outStr);
+	if (typeof req.headers['x-sap-scheduler-host'] !== "undefined") {
+		global_scheduler_host = req.headers['x-sap-scheduler-host'];
+		global_run_at = req.headers['x-sap-run-at'];
+		global_job_id = req.headers['x-sap-job-id'];
+		global_schedule_id = req.headers['x-sap-job-schedule-id'];
+		global_run_id = req.headers['x-sap-job-run-id'];
+		
+		outStr = "headers: " + JSON.stringify(req.headers) + "\n";
+		responseStr += outStr;
+		responseStr += "\n";
+		console.log(outStr);
 
-	outStr = "sleep: " + Secs + " seconds...";
-	responseStr += outStr;
-	responseStr += "\n";
-	console.log(outStr);
-	outStr = "start: ";
-	outStr += new Date().toISOString();
-	console.log(outStr);
-	responseStr += outStr;
-	responseStr += "\n";
+		outStr = "sleep: " + Secs + " seconds...";
+		responseStr += outStr;
+		responseStr += "\n";
+		console.log(outStr);
+		outStr = "start: ";
+		outStr += new Date().toISOString();
+		console.log(outStr);
+		responseStr += outStr;
+		responseStr += "\n";
 
-	setTimeout(setJobSchedulerStatus, mSecs);
-	intervalId = setInterval(varName, (mSecs / 10));
+		setTimeout(setJobSchedulerStatus, mSecs);
+		intervalId = setInterval(varName, (mSecs / 10));
 
-	outStr = "  end: ";
-	outStr += new Date().toISOString();
-	responseStr += outStr;
-	console.log(outStr);
+		outStr = "  end: ";
+		outStr += new Date().toISOString();
+		responseStr += outStr;
+		console.log(outStr);
 
-	responseStr = "OK";
-	res.set('Content-Type', 'text/plain');
-	res.status(202).send(responseStr);  // Notice 202 not 200
+		responseStr = "OK";
+		res.set('Content-Type', 'text/plain');
+		res.status(202).send(responseStr);  // Notice 202 not 200
+
+	}
+	else {
+		responseStr  = "When called by the Job Scheduler Service, this endpoint will sleep 30 seconds and then update the run log.\n";
+		responseStr += "You can monitor it's progress by watching the logs with this command.\n";
+		responseStr += "\n";
+		responseStr += "cf logs job-sched-wrk\n";
+		res.set('Content-Type', 'text/plain');
+		res.status(200).send(responseStr);  // Notice 202 not 200
+	}
 
 });
 
@@ -199,27 +209,19 @@ app.get("/wrk/test_now", function (req, res) {
 	var instanceNumber = process.env.INSTANCE_INDEX;
 	console.log("hdrs:" + JSON.stringify(req.headers,null,2));
 	var runDate = new Date();
-	//var finishDate = new Date(runDate.getTime() + (1 * 60000));
 	var hostname = req.hostname;
 	hostname = "conciletime-dev-job-sched-wrk.cfapps.us10.hana.ondemand.com";
 	var myJob = 
 	{
 	"name": jobName + "_" + instanceNumber + "_" + runDate.getHours() + "_" + runDate.getMinutes() + "_" + runDate.getSeconds(),
 	"description": "asynchronous job created by test_now",
-	//"action": "https://" + hostname + "/wrk/date",
 	"action": "https://" + hostname + "/wrk/sleep",
 	"active": true,
 	"httpMethod": "GET",
-	//"startTime": runDate.toISOString(),
-	//"endTime": finishDate.toISOString(),
 	"startTime": null,
 	"endTime": null,
 	"schedules": [
 		{
-			//"startTime": runDate.toISOString(),
-			//"startTime": null,
-			//"endTime": finishDate.toISOString(),
-			//"endTime": finishDate.toISOString(),
 			"time": runDate.toISOString(),
 			"active": true
 		}
@@ -241,10 +243,6 @@ app.get("/wrk/test_now", function (req, res) {
 				let resp_scheduleId = body.schedules[0].scheduleId;
 				let resp_runId = "blah";
 				console.log('OK creating job: %s', body);
-				console.log('Schedules: ', JSON.stringify(body.schedules,null,2));
-				console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=false&message=NOT%20OK%20finished');
-				console.log('https://' + req.hostname + '/wrk/update_job_run_log?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId + '&runId=' + resp_runId + '&success=true&message=OK%20finished');
-				console.log('http://' + 'localhost:8002' + '/wrk/get_run_logs?jobId=' + resp_jobId + '&scheduleId=' + resp_scheduleId);
 				responseJSON = body;
 				return res.json(responseJSON);
 			}
@@ -260,76 +258,6 @@ app.get("/wrk/test_now", function (req, res) {
 	}
 
 });
-
-// /wrk/get_run_logs?jobId=123&scheduleId=ABC-DEF
-app.get("/wrk/get_run_logs", function (req, res) {
-
-	var responseJSON = {
-		message: "none",
-	};
-
-	var sgRunLogs = { 
-		jobId: req.query.jobId, 
-		scheduleId: req.query.scheduleId,
-		page_size: 15,
-		offset: 0 
-	};
-
-	scheduler.getRunLogs(sgRunLogs, (error, result) => {
-	
-		if (error) {
-			console.log('Error getting run logs: %s', error);
-			responseJSON.message = error;
-			return res.json(responseJSON);
-		}
-		else {
-			var resp_runId = result.results[0].runId;
-			console.log('OK getting run logs: %s', result);
-			console.log('http://' + 'localhost:8002' + '/wrk/update_job_run_log?jobId=' + req.query.jobId + '&scheduleId=' + req.query.scheduleId + '&runId=' + resp_runId + '&success=false&message=NOT%20OK%20finished');
-			console.log('http://' + 'localhost:8002' + '/wrk/update_job_run_log?jobId=' + req.query.jobId + '&scheduleId=' + req.query.scheduleId + '&runId=' + resp_runId + '&success=true&message=OK%20finished');
-			responseJSON = result;
-			return res.json(responseJSON);
-		}
-		return null;
-	});
-
-});
-
-// /wrk/update_job_run_log?jobId=123&scheduleId=ABC-DEF&runId=XYZ-1234&success=true&message=OK%20finished
-app.get("/wrk/update_job_run_log", function (req, res) {
-
-	var responseJSON = {
-		message: "none",
-	};
-
-	// var data = { success: req.query.success, message: '"' + "YO" + '"' };
-	var data = { success: false, message: "YO" };
-
-	var suRunLog = { 
-		jobId: req.query.jobId, 
-		scheduleId: req.query.scheduleId,
-		runId: req.query.runId,
-		data: data
-	};
-
-	scheduler.updateJobRunLog(suRunLog, (error, result) => {
-	
-		if (error) {
-			console.log('Error update run log: %s', error);
-			responseJSON.message = error;
-			return res.json(responseJSON);
-		}
-		else {
-			console.log('OK update run log: %s', result);
-			responseJSON = result;
-			return res.json(responseJSON);
-		}
-		return null;
-	});
-
-});
-
-
 
 server.on("request", app);
 
